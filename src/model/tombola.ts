@@ -16,6 +16,7 @@ export class ElementTombola {
         if (this.value === value) {
             this.extracted = true;
         }
+        return this.extracted;
     }
 }
 
@@ -67,8 +68,7 @@ export class RowTombola {
     public checkValue(value: ElementType): boolean {
         return this.columns.map(el => {
             if (el) {
-                el.markValueExtraced(value);
-                return el.Extracted;
+                return el.markValueExtraced(value);
             }
             else return true;
         }).every(el => el);
