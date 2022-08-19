@@ -12,15 +12,15 @@ export class ElementTombola {
         this.extracted = false;
     }
 
-    public checkValue(value: ElementType): boolean {
+    public markValueExtraced(value: ElementType) {
         if (this.value === value) {
             this.extracted = true;
-            return true;
         }
     }
 }
 
 export class RowTombola {
+    private configurationRangeColumnMap = new Map<number, [number, number]>();
     private columns: ElementTombola[] = [];
 
     public get Columns(): ElementTombola[] { return this.columns; }
@@ -31,24 +31,47 @@ export class RowTombola {
         offset?: number,
         blankSpaceCount?: number,
     ) {
+        this.configureRangeColumnMap();
+
+        const blankIndex = getRandomValues(columnsCount, blankSpaceCount);
+
         this.columns = Array(columnsCount)
             .fill(0)
             .map((_, i) => {
-                const blankIndex = getRandomValues(columnsCount, blankSpaceCount);
 
                 if (randomNumber) {
-                    return blankIndex.some((v) => v == i + 1)
+                    const range = this.configurationRangeColumnMap.get(i);
+
+                    return blankIndex.includes(i + 1)
                         ? undefined
-                        : getRandomValue(maxValue);
+                        : getRandomValue(range[1] - range[0] + 1) + range[0] - 1;
                 } else {
-                    return blankIndex.some((v) => v == i) ? undefined : offset + i + 1;
+                    return blankIndex.includes(i + 1) ? undefined : offset + i + 1;
                 }
             })
             .map((el) => (el ? new ElementTombola(el) : undefined));
     }
 
+    private configureRangeColumnMap() {
+        this.configurationRangeColumnMap.set(0, [1, 9]);
+        this.configurationRangeColumnMap.set(1, [10, 19]);
+        this.configurationRangeColumnMap.set(2, [20, 29]);
+        this.configurationRangeColumnMap.set(3, [30, 39]);
+        this.configurationRangeColumnMap.set(4, [40, 49]);
+        this.configurationRangeColumnMap.set(5, [50, 59]);
+        this.configurationRangeColumnMap.set(6, [60, 69]);
+        this.configurationRangeColumnMap.set(7, [70, 79]);
+        this.configurationRangeColumnMap.set(8, [80, 90]);
+    }
+
     public checkValue(value: ElementType): boolean {
-        return this.columns.some((el) => el && el.checkValue(value));
+        return this.columns.map(el => {
+            if (el) {
+                el.markValueExtraced(value);
+                return el.Extracted;
+            }
+            else return true;
+        }).every(el => el);
     }
 }
 
@@ -101,10 +124,13 @@ export class Tombola {
         const newValue = this.getRandomValue(maxValue);
 
         this.extractedElements = [...this.extractedElements, newValue].sort((a, b) => a - b);
-        this.mainTable.checkValue(newValue);
-        this.users.forEach(user => user.forEach(table => table.checkValue(newValue)));
 
-        return undefined;
+        this.mainTable.checkValue(newValue);
+        const wonUsers = Array.from(this.users.entries())
+            .filter(([user, userTables]) => userTables.some(table => table.checkValue(newValue)))
+            .map(([user, userTables]) => user);
+
+        return wonUsers.length > 0 ? wonUsers.join(', ') : undefined;
     }
 
     public createNewUserWithTables(user: string, tables: number) {

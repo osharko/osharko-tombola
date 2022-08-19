@@ -2,7 +2,7 @@
     <app-user-tombola-tables class="row my-5" user="Banco" [tables]="[tombola.MainTable]">
     </app-user-tombola-tables>
 
-    <div class="row">
+    <div class="row" *ngIf="!wonUsers; else won;">
         <div class="col">
             <button class="btn btn-warning" (click)="newGame()">
                 Ricomincia la partita
@@ -13,7 +13,15 @@
                 Estrai un numero
             </button>
         </div>
+        <div class="col">
+            <button class="btn btn-success" (click)="getUntil()">
+                Estrazione Compulsiva
+            </button>
+        </div>
     </div>
+    <ng-template #won>
+        <h1>{{wonUsers}} Won!!!</h1>
+    </ng-template>
 
     <app-user-tombola-tables *ngFor="let user of tombola.Users" class="row my-5" [user]="user[0]" [tables]="user[1]">
     </app-user-tombola-tables>

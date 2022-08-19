@@ -7,6 +7,7 @@ import { Tombola } from 'src/model/tombola';
 })
 export class AppComponent implements OnInit {
   public tombola = new Tombola();
+  public wonUsers?;
 
   ngOnInit() {
     this.tombola.createNewUserWithTables("Luigi", 3);
@@ -18,6 +19,11 @@ export class AppComponent implements OnInit {
   }
 
   public getNumber() {
-    return this.tombola.extractNewElement();
+    this.wonUsers = this.tombola.extractNewElement();
+  }
+
+  public getUntil() {
+    while (!this.wonUsers)
+      this.wonUsers = this.tombola.extractNewElement();
   }
 }
