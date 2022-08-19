@@ -1,0 +1,20 @@
+<div class="container">
+    <app-user-tombola-tables class="row my-5" user="Banco" [tables]="[tombola.MainTable]">
+    </app-user-tombola-tables>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-warning" (click)="newGame()">
+                Ricomincia la partita
+            </button>
+        </div>
+        <div class="col">
+            <button class="btn btn-danger" (click)="getNumber()">
+                Estrai un numero
+            </button>
+        </div>
+    </div>
+
+    <app-user-tombola-tables *ngFor="let user of tombola.Users" class="row my-5" [user]="user[0]" [tables]="user[1]">
+    </app-user-tombola-tables>
+</div>

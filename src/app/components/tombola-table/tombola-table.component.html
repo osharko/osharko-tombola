@@ -1,0 +1,10 @@
+<div class="container" style="border: solid 3px black;">
+    <div *ngFor="let row of table.Rows" class="row">
+        <div *ngFor="let element of row.Columns" class="col my-1">
+            <p [ngStyle]="{'background-color': element?.Extracted ? 'darkgoldenrod' : 'red' }" style="color:white; border-radius: 100%; font-size:20px; font-weight: 800; width:
+                40px; height: 40px;" class="m-auto p-auto">
+                {{element?.Value || ''}}
+            </p>
+        </div>
+    </div>
+</div>
